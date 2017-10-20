@@ -108,6 +108,8 @@ if (!defined('__CLASS_HTML2PDF__')) {
         protected $_debugStartTime   = 0;           // debug start time
         protected $_debugLastTime    = 0;           // debug stop time
 
+        protected $_hideHeader       = array();
+
         static protected $_subobj    = null;        // object html2pdf prepared in order to accelerate the creation of sub html2pdf
         static protected $_tables    = array();     // static table to prepare the nested html tables
 
@@ -807,6 +809,9 @@ if (!defined('__CLASS_HTML2PDF__')) {
         {
             if (!count($this->_subHEADER)) return false;
 
+            if (in_array($this->pdf->getMyNumPage(), $this->_hideHeader)) {
+                return false;
+            }
             $oldParsePos = $this->_parsePos;
             $oldParseCode = $this->parsingHtml->code;
 
@@ -2238,6 +2243,10 @@ if (!defined('__CLASS_HTML2PDF__')) {
 
             $resetPageNumber = (isset($param['pagegroup']) && $param['pagegroup']=='new');
 
+            if (array_key_exists('hideheader', $param) && $param['hideheader']!='false' && !empty($param['hideheader'])) {
+                $this->_hideHeader = (array) array_merge($this->_hideHeader, explode(',', $param['hideheader']));
+            }
+            
             $this->_maxH = 0;
 
             // if new page set asked
